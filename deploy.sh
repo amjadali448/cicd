@@ -18,7 +18,7 @@ echo "Skipping ssh-keyscan... Assuming known_hosts is already set."
 
 # Test SSH connection
 echo "Testing SSH connection..."
-ssh -o StrictHostKeyChecking=no -v inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
+ssh inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
 
 # Copy Kubernetes manifest
 echo "Copying Kubernetes manifest..."
@@ -42,4 +42,3 @@ echo "Checking deployment status..."
 ssh inara@10.1.41.75 "kubectl get deployments cicd-deployment"
 
 echo "Deployment completed successfully!"
-
