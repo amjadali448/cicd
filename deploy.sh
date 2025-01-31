@@ -10,12 +10,7 @@ mkdir -p ~/.ssh
 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
-# Debugging: Check SSH key validity
-ssh-keygen -lf ~/.ssh/id_rsa || echo "SSH key not valid!"
 
-# Add the remote server to known_hosts
-echo "Adding remote host to known_hosts..."
-ssh-keyscan -H 10.1.41.75 >> ~/.ssh/known_hosts || { echo "ssh-keyscan failed!"; exit 1; }
 
 # Test SSH connection
 echo "Testing SSH connection..."
