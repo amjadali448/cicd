@@ -26,12 +26,18 @@ jobs:
     - name: Push the Docker image
       run: docker push amjad123ali/django:$IMAGE_TAG
 
-  deployk8:  # This job is now correctly placed under 'jobs'
+  deploy-k8:  # Fixed: Job name should use hyphen instead of underscore
     needs: build  # Ensures deployment runs after the build job
-    runs-on: ubuntu-latest  # Use latest Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4  # Checkout the repository code
+    - uses: actions/checkout@v4
 
-    - name: Run Deployment Script
-      run: ./deploy.sh  # Executes the deploy script
+    - name: Set Image Tag
+      run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+    - name: Deploy to Kubernetes
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+      run: ./deploy.sh
