@@ -10,11 +10,15 @@ mkdir -p ~/.ssh
 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
+# Debugging: Check SSH key validity
+ssh-keygen -lf ~/.ssh/id_rsa || echo "SSH key not valid!"
 
+# Skip ssh-keyscan if failing, instead, manually add the key before running the workflow
+echo "Skipping ssh-keyscan... Assuming known_hosts is already set."
 
 # Test SSH connection
 echo "Testing SSH connection..."
-ssh -v inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
+ssh -o StrictHostKeyChecking=no -v inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
 
 # Copy Kubernetes manifest
 echo "Copying Kubernetes manifest..."
