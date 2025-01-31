@@ -35,7 +35,8 @@ jobs:
 
     - name: Set Image Tag
       run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
-
+    - name: Make deploy script executable
+      run: chmod +x deploy.sh
     - name: Deploy to Kubernetes
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
