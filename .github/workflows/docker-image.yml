@@ -9,7 +9,6 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +24,14 @@ jobs:
       run: docker build . --file Dockerfile --tag amjad123ali/django:$IMAGE_TAG
 
     - name: Push the Docker image
-      run: |
-        #docker push amjad123ali/django:latest
-        docker push amjad123ali/django:$IMAGE_TAG
+      run: docker push amjad123ali/django:$IMAGE_TAG
+
+  deployk8:  # This job is now correctly placed under 'jobs'
+    needs: build  # Ensures deployment runs after the build job
+    runs-on: ubuntu-latest  # Use latest Ubuntu runner
+
+    steps:
+    - uses: actions/checkout@v4  # Checkout the repository code
+
+    - name: Run Deployment Script
+      run: ./deploy.sh  # Executes the deploy script
