@@ -10,15 +10,12 @@ mkdir -p ~/.ssh
 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
-# Debugging: Check SSH key validity
-ssh-keygen -lf ~/.ssh/id_rsa || echo "SSH key not valid!"
-
-# Skip ssh-keyscan if failing, instead, manually add the key before running the workflow
+# Skip ssh-keyscan if failing, assuming known_hosts is already set.
 echo "Skipping ssh-keyscan... Assuming known_hosts is already set."
 
 # Test SSH connection
 echo "Testing SSH connection..."
-ssh inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
+ssh -o StrictHostKeyChecking=no -v inara@10.1.41.75 "echo 'SSH connection successful'" || { echo "SSH connection failed!"; exit 1; }
 
 # Copy Kubernetes manifest
 echo "Copying Kubernetes manifest..."
@@ -26,7 +23,7 @@ scp manifest.yml inara@10.1.41.75:/tmp/ || { echo "SCP failed"; exit 1; }
 
 # Apply the Kubernetes manifest
 echo "Applying Kubernetes manifest..."
-ssh inara@10.1.41.75 "kubectl apply -f /tmp/manifest.yml" || { echo "K8s apply failed"; exit 1; }
+ssh inara@10.1.41.75 "IMAGE_TAG=$IMAGE_TAG envsubst < /tmp/manifest.yml | kubectl apply -f -" || { echo "K8s apply failed"; exit 1; }
 
 # Update deployment with new image
 NEW_IMAGE="amjad123ali/django:$IMAGE_TAG"
